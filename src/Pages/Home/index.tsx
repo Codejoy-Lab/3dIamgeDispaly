@@ -20,11 +20,16 @@ function ThreeDModel() {
     const objLoader = new OBJLoader();
     const mtlLoader = new MTLLoader();
     const fontLoader = new FontLoader();
-
+    // 创建网格辅助器
+    var size = 100; // 网格的大小
+    var divisions = 100; // 网格的分割数
+    var gridHelper = new THREE.GridHelper(size, divisions);
+    gridHelper.position.set(0,0,10)
+    gridHelper.rotation.x = Math.PI / 2; // 将网格旋转90度，使其与XY平面平行
     let modelBoundingBox = new THREE.Box3();
 
-    fontLoader.load('', function (font:any){})
-    
+    fontLoader.load('', function (font: any) { })
+
     const light = new THREE.PointLight(0xffffff, 1);
     light.position.set(0, 0, 0);
 
@@ -34,7 +39,8 @@ function ThreeDModel() {
     }
 
     camera.position.set(0, 0, 0);
-    scene.background = new THREE.Color(0xdddddd);
+    scene.background = new THREE.Color(0x000000);
+    // 将网格添加到场景中
 
     const render = () => {
       requestAnimationFrame(render);
@@ -52,6 +58,7 @@ function ThreeDModel() {
       (object: any) => {
         scene.add(object); // Assuming 'scene' is your Three.js scene
         scene.add(light);
+        scene.add(gridHelper);
 
         modelBoundingBox.setFromObject(object);
         // 获取包围盒的尺寸
@@ -100,7 +107,7 @@ function ThreeDModel() {
     return () => {
       // 清理工作，避免内存泄漏
       mountRef.current.removeChild(renderer.domElement);
-      window.removeEventListener('resize', () => {});
+      window.removeEventListener('resize', () => { });
     };
   }, []);
 
