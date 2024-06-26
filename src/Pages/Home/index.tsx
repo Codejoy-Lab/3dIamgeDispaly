@@ -171,7 +171,7 @@ function ThreeDModel() {
           onModelChange={handleModelChange}
           imageUrl={imageUrl}
           onDownload={() => {
-            downloadFile(imageUrl, 'model.obj' )
+            downloadFile(modelUrl, 'model.obj' )
           }}
         ></ChatBox>
       </div>
