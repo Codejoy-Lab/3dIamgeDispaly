@@ -1,14 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
+
+import  { useEffect, useRef, useState } from 'react';
 import styles from './index.module.scss';
 import * as THREE from 'three';
+// @ts-ignore
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+// @ts-ignore
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+// import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import ChangeButton from '../../components/ChangeButton';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 function ThreeDModel() {
   const mountRef = useRef<any>(null);
   const [modelUrl, setModelUrl] = useState('/3dModels/model.obj');
+  const [imageUrl, setImageUrl] = useState(
+    'http://192.168.44.63:8880/static/output_img/73a8e761-662c-4b22-a636-74082ebc9377-1.png'
+  );
+
   useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -20,8 +27,8 @@ function ThreeDModel() {
     camera.lookAt(0, 0, 0); // 默认观察场景中心，可以根据需要调整
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     const objLoader = new OBJLoader();
-    const mtlLoader = new MTLLoader();
-    const fontLoader = new FontLoader();
+    // const mtlLoader = new MTLLoader();
+    // const fontLoader = new FontLoader();
     // 创建网格辅助器
     var size = 100; // 网格的大小
     var divisions = 100; // 网格的分割数
@@ -29,7 +36,7 @@ function ThreeDModel() {
     gridHelper.position.set(0, 0, 10);
     gridHelper.rotation.x = Math.PI / 2; // 将网格旋转90度，使其与XY平面平行
     let modelBoundingBox = new THREE.Box3();
-    fontLoader.load('', function (font: any) {});
+    // fontLoader.load('', function (font: any) {});
     const light = new THREE.PointLight(0x1e1b1b, 4);
     const ambientlight = new THREE.AmbientLight(0xffffff, 4);
     const spotLight = new THREE.SpotLight(0xffffff); // 创建聚光灯
@@ -131,14 +138,20 @@ function ThreeDModel() {
       mountRef.current.removeChild(renderer.domElement);
       window.removeEventListener('resize', onWindowResize);
     };
-  }, []);
-  const handleModelChange = (url: string) => {
-    url && setModelUrl(url);
+  }, [modelUrl]);
+  const handleModelChange = (obj: { imageUrl: any; objUrl: any }) => {
+    const { imageUrl, objUrl } = obj;
+    setModelUrl(objUrl);
+    setImageUrl(imageUrl);
   };
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-        <ChatBox onModelChange={handleModelChange}></ChatBox>
+        <ChatBox
+          onModelChange={handleModelChange}
+          imageUrl={imageUrl}
+        ></ChatBox>
       </div>
       <div
         className={styles.right}
@@ -152,26 +165,45 @@ function ThreeDModel() {
 export default ThreeDModel;
 
 export const ChatBox = (props: any) => {
-  const { onModelChange } = props;
-  const [message, setMessage] = useState(
-    '一只坐着的小狗'
-  );
-  const [url, setUrl] = useState('');
-
+  const { onModelChange, imageUrl } = props;
+  const [message, setMessage] = useState('一只坐着的小狗');
+  const handleQuestionChange = (question: string) => {
+    question && setMessage(question);
+  };
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div className={styles.chatBox}>
-      <div className={styles.title}>语音生成3D模型</div>
-      <div className={styles.messageBox}>{message}</div>
-      <div className={styles.buttonrow}>
-        <Button type={'primary'} style={{ width: '45%' }}>
-          下载
-        </Button>
-        <ChangeButton
-          type={'primary'}
-          style={{ width: '45%' }}
-          onModelChange={onModelChange}
-        ></ChangeButton>
+      <div className={styles.optionArea}>
+        <div className={styles.title}>语音生成3D模型</div>
+        <div className={styles.messageBox}>{message}</div>
+        <div className={styles.buttonrow}>
+          <Button type={'primary'} style={{ width: '45%' }}>
+            下载
+          </Button>
+          <ChangeButton
+            type={'primary'}
+            style={{ width: '45%' }}
+            onQuestionChange={handleQuestionChange}
+            onModelChange={onModelChange}
+            onLoadingChange={(v: boolean) => {
+              setIsLoading(v);
+            }}
+          ></ChangeButton>
+        </div>
       </div>
+      <>
+        {!isLoading ? (
+          <>
+            {imageUrl ? (
+              <img className={styles.previewImage} src={imageUrl} />
+            ) : null}
+          </>
+        ) : (
+          <div className={styles.previewImage}>
+            <Spin />
+          </div>
+        )}
+      </>
     </div>
   );
 };

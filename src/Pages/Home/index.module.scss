@@ -11,21 +11,40 @@
     height: 100%;
     background-color: #000;
   }
+  .imageBox {
+    width: 20%;
+    height: 100%;
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 .chatBox {
-  width: 25vw;
-  height: 35vh;
+  width: 40vw;
+  height: 40vh;
   z-index: 1000;
   background-color: #1b1d1e;
   position: absolute;
   top: 50%;
-  left: 10%;
-  transform: translate(-10%, -50%);
+  left: 5%;
+  transform: translate(-5%, -50%);
   border-radius: 10px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
+  .optionArea {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .previewImage {
+    height: 100%;
+    width: 50%;
+    border-radius: 5px;
+  }
 }
 .buttonrow {
   width: calc(100% - 40px);

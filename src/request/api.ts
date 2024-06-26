@@ -1,8 +1,8 @@
 import req from '.';
 
 //语音识别
-export const startTapeApi = async (data:any) => {
-  return await req.post('/start_asr', data, {headers: {'Content-Type': 'application/form-data'}});
+export const startTapeApi = async () => {
+  return await req.post('/start_asr');
 };
 // 关闭语音识别
 export const stopTapeApi = async () => {
@@ -10,7 +10,10 @@ export const stopTapeApi = async () => {
 };
 
 //调用大模型 返回answer
-export const callLlm = async (role: string, question: string):Promise<{data:string}> => {
+export const callLlm = async (
+  role: string,
+  question: string
+): Promise<{ data: string }> => {
   return await req.post(`/start_llm_question/${role}/${question}`);
 };
 
@@ -26,3 +29,11 @@ export const getQuestion = async (): Promise<string> => {
 // export const sendPlayOlder = async (role: string, question: string) => {
 // //   return await req.post(`/start_llm_paly/${role}/${question}`);
 // };
+// 获取图片
+export const getImage = async (): Promise<string> => {
+  return await req.get('/get_img');
+};
+// 获取模型
+export const getModel = async (imagePath: string): Promise<string> => {
+  return await req.get(`/get_model/${imagePath}`);
+};
