@@ -1,5 +1,4 @@
-
-import  { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './index.module.scss';
 import * as THREE from 'three';
 // @ts-ignore
@@ -144,13 +143,36 @@ function ThreeDModel() {
     setModelUrl(objUrl);
     setImageUrl(imageUrl);
   };
+  function downloadFile(url, fileName) {
+    // 创建一个a元素
+    var a =
+      document.getElementById('downloadLink') || document.createElement('a');
 
+    // 设置a元素的href属性为文件的URL
+    // @ts-ignore
+
+    a.href = url;
+    // @ts-ignore
+
+    // 设置下载的文件名
+    a.download = fileName || 'download';
+
+    // 触发点击事件
+    document.body.appendChild(a);
+    a.click();
+
+    // 清理
+    document.body.removeChild(a);
+  }
   return (
     <div className={styles.container}>
       <div className={styles.left}>
         <ChatBox
           onModelChange={handleModelChange}
           imageUrl={imageUrl}
+          onDownload={() => {
+            downloadFile(imageUrl, 'model.obj' )
+          }}
         ></ChatBox>
       </div>
       <div
@@ -165,7 +187,7 @@ function ThreeDModel() {
 export default ThreeDModel;
 
 export const ChatBox = (props: any) => {
-  const { onModelChange, imageUrl } = props;
+  const { onModelChange, imageUrl, onDownload } = props;
   const [message, setMessage] = useState('一只坐着的小狗');
   const handleQuestionChange = (question: string) => {
     question && setMessage(question);
@@ -177,7 +199,11 @@ export const ChatBox = (props: any) => {
         <div className={styles.title}>语音生成3D模型</div>
         <div className={styles.messageBox}>{message}</div>
         <div className={styles.buttonrow}>
-          <Button type={'primary'} style={{ width: '45%' }}>
+          <Button
+            type={'primary'}
+            style={{ width: '45%' }}
+            onClick={onDownload}
+          >
             下载
           </Button>
           <ChangeButton
