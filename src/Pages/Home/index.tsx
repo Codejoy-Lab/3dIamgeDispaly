@@ -8,7 +8,7 @@ import ChangeButton from '../../components/ChangeButton';
 import { Button } from 'antd';
 function ThreeDModel() {
   const mountRef = useRef<any>(null);
-  const [modelUrl, setModelUrl] = useState('/3dModels/tmp1.obj');
+  const [modelUrl, setModelUrl] = useState('/3dModels/model.obj');
   useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -132,11 +132,13 @@ function ThreeDModel() {
       window.removeEventListener('resize', onWindowResize);
     };
   }, []);
-
+  const handleModelChange = (url: string) => {
+    url && setModelUrl(url);
+  };
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-        <ChatBox></ChatBox>
+        <ChatBox onModelChange={handleModelChange}></ChatBox>
       </div>
       <div
         className={styles.right}
@@ -149,20 +151,26 @@ function ThreeDModel() {
 
 export default ThreeDModel;
 
-export const ChatBox = () => {
+export const ChatBox = (props: any) => {
+  const { onModelChange } = props;
   const [message, setMessage] = useState(
-    '狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸狐狸'
+    '一只坐着的小狗'
   );
   const [url, setUrl] = useState('');
+
   return (
     <div className={styles.chatBox}>
-      <div className={styles.title}>文本生成模型</div>
+      <div className={styles.title}>语音生成3D模型</div>
       <div className={styles.messageBox}>{message}</div>
       <div className={styles.buttonrow}>
         <Button type={'primary'} style={{ width: '45%' }}>
           下载
         </Button>
-        <ChangeButton type={'primary'} style={{ width: '45%' }}></ChangeButton>
+        <ChangeButton
+          type={'primary'}
+          style={{ width: '45%' }}
+          onModelChange={onModelChange}
+        ></ChangeButton>
       </div>
     </div>
   );
