@@ -1,0 +1,22 @@
+/* styles.css */
+@keyframes speakAnimation {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.speaker {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ffcc00; /* 黄色 */
+  position: relative;
+  margin: 20px auto;
+  animation: speakAnimation 1s infinite;
+}
