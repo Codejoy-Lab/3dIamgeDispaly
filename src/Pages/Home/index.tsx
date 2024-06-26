@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
 function ThreeDModel() {
   const mountRef = useRef<any>(null);
@@ -18,9 +19,12 @@ function ThreeDModel() {
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     const objLoader = new OBJLoader();
     const mtlLoader = new MTLLoader();
-    let modelBoundingBox = new THREE.Box3();
-    // const gridLoader = new THREE.GridTextureLoader();
+    const fontLoader = new FontLoader();
 
+    let modelBoundingBox = new THREE.Box3();
+
+    fontLoader.load('', function (font:any){})
+    
     const light = new THREE.PointLight(0xffffff, 1);
     light.position.set(0, 0, 0);
 
@@ -46,25 +50,25 @@ function ThreeDModel() {
     objLoader.load(
       '/3dModels/tmp.obj',
       (object: any) => {
-        object.scale.set(10, 10, 10);
         scene.add(object); // Assuming 'scene' is your Three.js scene
         scene.add(light);
-        // 将摄像机位置调整到模型的正前方
-        const distance = 20; // 摄像机到模型的距离，根据实际需要调整
-        const frontVector = new THREE.Vector3(0, 0, -1); // 模型的正前方向
+
+        modelBoundingBox.setFromObject(object);
+        // 获取包围盒的尺寸
+        const modelSize = new THREE.Vector3();
+        modelBoundingBox.getSize(modelSize);
+        console.log('模型尺寸:', modelSize);
+
+        // Adjust camera position
+        const distance = Math.max(modelSize.x, modelSize.y, modelSize.z) * 2;
+        const frontVector = new THREE.Vector3(0, 0, -1);
         const frontPosition = new THREE.Vector3();
         object.getWorldPosition(frontPosition);
         const cameraPosition = frontPosition
           .clone()
           .addScaledVector(frontVector, distance);
         camera.position.copy(cameraPosition);
-        camera.lookAt(frontPosition); // 使摄像机看向模型的中心点
-
-        modelBoundingBox.setFromObject(object);
-        // 获取包围盒的尺寸
-        const size = new THREE.Vector3();
-        modelBoundingBox.getSize(size);
-        console.log('模型尺寸:', size);
+        camera.lookAt(frontPosition);
 
         render();
         // animate(object)
@@ -84,7 +88,7 @@ function ThreeDModel() {
 
     //     materials.preload();
     //     objLoader.setMaterials(materials);
-     
+
     //   },
     //   (xhr: any) => {
     //     console.log((xhr.loaded / xhr.total) * 100 + '% of MTL loaded');
