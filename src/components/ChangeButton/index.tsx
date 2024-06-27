@@ -10,10 +10,10 @@ import {
 } from '../../request/api';
 export default (props: any) => {
   // const pathname = window.location.pathname
-  const { chatId, onModelChange, onQuestionChange, onLoadingChange } = props;
+  const { chatId, onModelChange, onQuestionChange, onLoadingChange, isResetDisabled, setIsResetDisabled } = props;
   const [imageUrl, setImageUrl] = useState('');
   const [objUrl, setObjUrl] = useState('');
-  const [isResetDisabled, setIsResetDisabled] = useState(false);
+  // const [isResetDisabled, setIsResetDisabled] = useState(false);
   const basename = 'http://127.0.0.1:8880';
   const list = [
     {
@@ -21,24 +21,31 @@ export default (props: any) => {
       callback: async () => {
         // 调用语音接口
         setStatus(list[1]);
+        onQuestionChange('正在倾听你的声音')
+
         startTapeApi();
       },
     },
     {
       title: '停止说话',
       callback: async () => {
-        stopTapeApi();
+        setIsResetDisabled(false)
+        // stopTapeApi();
         // 获取地址
-        const question = await getQuestion();
         onModelChange({
           objUrl: '',
+          imageUrl: ""
         });
-        question && onQuestionChange(question);
+        onLoadingChange(true);
+        onQuestionChange('正在生成你所说的物体的3D模型')
+
+        const question = await getQuestion();
+
+        onQuestionChange(`正在生成：${question}`);
         console.log('question', question);
         setIsResetDisabled(true);
         setStatus(list[2]);
         // 获取预览图片地址
-        onLoadingChange(true);
         getImage().then((image) => {
           console.log('image', image);
           const totalImageUrl = `${basename}/static/output_img/${image}`;
@@ -57,9 +64,17 @@ export default (props: any) => {
               imageUrl: totalImageUrl,
               objUrl: totalModelUrl,
             });
+            onQuestionChange(`${question}`);
+
             setStatus(list[0]);
-          });
-        });
+          }).catch(res => {
+            setStatus(list[0]);
+            setIsResetDisabled(true)
+          })
+        }).catch(res => {
+          setStatus(list[0]);
+          setIsResetDisabled(true)
+        })
 
         // const image: string = await getImage();
         // console.log('image', image);
@@ -79,11 +94,12 @@ export default (props: any) => {
       },
     },
     {
-      title: '生成3d模型',
+      title: '正在生成中...',
       callback: async (obj?: any) => {
-        // 改变three的模型
-        setStatus(list[0]);
-        obj && onModelChange(obj);
+        return
+        // // 改变three的模型
+        // setStatus(list[0]);
+        // obj && onModelChange(obj);
       },
     },
   ];

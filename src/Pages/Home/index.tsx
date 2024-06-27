@@ -8,11 +8,12 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 // import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import ChangeButton from '../../components/ChangeButton';
 import { Button, Spin } from 'antd';
+import { color } from 'three/examples/jsm/nodes/Nodes.js';
 function ThreeDModel() {
   const mountRef = useRef<any>(null);
   const [modelUrl, setModelUrl] = useState('/3dModels/model.obj');
   const [imageUrl, setImageUrl] = useState(
-    'http://192.168.44.63:8880/static/output_img/73a8e761-662c-4b22-a636-74082ebc9377-1.png'
+    'http://localhost:5173/3afad671-4cda-4664-be33-eef011d06e51-1.png'
   );
 
   useEffect(() => {
@@ -168,10 +169,11 @@ function ThreeDModel() {
     <div className={styles.container}>
       <div className={styles.left}>
         <ChatBox
+          modelUrl={modelUrl}
           onModelChange={handleModelChange}
           imageUrl={imageUrl}
           onDownload={() => {
-            downloadFile(modelUrl, 'model.obj' )
+            downloadFile(modelUrl, 'model.obj')
           }}
         ></ChatBox>
       </div>
@@ -187,12 +189,18 @@ function ThreeDModel() {
 export default ThreeDModel;
 
 export const ChatBox = (props: any) => {
-  const { onModelChange, imageUrl, onDownload } = props;
+  const { onModelChange, imageUrl, onDownload, modelUrl } = props;
   const [message, setMessage] = useState('一只坐着的小狗');
   const handleQuestionChange = (question: string) => {
     question && setMessage(question);
   };
   const [isLoading, setIsLoading] = useState(false);
+  const [isResetDisabled, setIsResetDisabled] = useState(true)
+  const getChatId = () => {
+    let date = new Date()
+    return date.getTime()
+  }
+  const [chatId, setChatId] = useState(getChatId())
   return (
     <div className={styles.chatBox}>
       <div className={styles.optionArea}>
@@ -200,20 +208,36 @@ export const ChatBox = (props: any) => {
         <div className={styles.messageBox}>{message}</div>
         <div className={styles.buttonrow}>
           <Button
+            disabled={!modelUrl}
             type={'primary'}
-            style={{ width: '45%' }}
+            style={{ width: '30%', color: '#fff' }}
             onClick={onDownload}
           >
-            下载
+            下载模型
+          </Button>
+          <Button
+            type={'primary'}
+            style={{ width: '30%', color: '#fff' }}
+            onClick={() => {
+              setChatId(getChatId())
+              handleQuestionChange('')
+              setIsResetDisabled(true)
+            }}
+            disabled={isResetDisabled}
+          >
+            重新开始
           </Button>
           <ChangeButton
+            chatId={chatId}
             type={'primary'}
-            style={{ width: '45%' }}
+            style={{ width: '30%', color: '#fff' }}
             onQuestionChange={handleQuestionChange}
             onModelChange={onModelChange}
             onLoadingChange={(v: boolean) => {
               setIsLoading(v);
             }}
+            isResetDisabled={!isResetDisabled}
+            setIsResetDisabled={setIsResetDisabled}
           ></ChangeButton>
         </div>
       </div>
