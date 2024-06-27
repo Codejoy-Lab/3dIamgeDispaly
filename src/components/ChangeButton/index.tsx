@@ -31,7 +31,7 @@ export default (props: any) => {
         // 获取地址
         const question = await getQuestion();
         onModelChange({
-          objUrl: '#',
+          objUrl: '',
         });
         question && onQuestionChange(question);
         console.log('question', question);
@@ -39,22 +39,43 @@ export default (props: any) => {
         setStatus(list[2]);
         // 获取预览图片地址
         onLoadingChange(true);
+        getImage().then((image) => {
+          console.log('image', image);
+          const totalImageUrl = `${basename}/static/output_img/${image}`;
+          setImageUrl(totalImageUrl);
+          onModelChange({
+            imageUrl: totalImageUrl,
+            objUrl: '',
+          });
+          onLoadingChange(false);
 
-        const image: string = await getImage();
-        console.log('image', image);
-        const totalImageUrl = `${basename}/static/output_img/${image}`;
-        setImageUrl(totalImageUrl);
-        onLoadingChange(false);
-        // 获取模型地址
-        const model = await getModel(image);
-        const totalModelUrl = `${basename}/static/output_obj/${model}`;
-        console.log('model', totalModelUrl);
-        setObjUrl(totalModelUrl);
-        onModelChange({
-          imageUrl: totalImageUrl,
-          objUrl: totalModelUrl,
+          getModel(image).then((model) => {
+            const totalModelUrl = `${basename}/static/output_obj/${model}`;
+            console.log('model', totalModelUrl);
+            setObjUrl(totalModelUrl);
+            onModelChange({
+              imageUrl: totalImageUrl,
+              objUrl: totalModelUrl,
+            });
+            setStatus(list[0]);
+          });
         });
-        setStatus(list[0]);
+
+        // const image: string = await getImage();
+        // console.log('image', image);
+        // const totalImageUrl = `${basename}/static/output_img/${image}`;
+        // setImageUrl(totalImageUrl);
+        // onLoadingChange(false);
+        // // 获取模型地址
+        // const model = await getModel(image);
+        // const totalModelUrl = `${basename}/static/output_obj/${model}`;
+        // console.log('model', totalModelUrl);
+        // setObjUrl(totalModelUrl);
+        // onModelChange({
+        //   imageUrl: totalImageUrl,
+        //   objUrl: totalModelUrl,
+        // });
+        // setStatus(list[0]);
       },
     },
     {
