@@ -9,6 +9,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import ChangeButton from '../../components/ChangeButton';
 import { Button, Spin } from 'antd';
 import { color } from 'three/examples/jsm/nodes/Nodes.js';
+import { getImage, getModel } from '../../request/api';
 function ThreeDModel() {
   const mountRef = useRef<any>(null);
   const [modelUrl, setModelUrl] = useState('/3dModels/model.obj');
@@ -187,47 +188,40 @@ function ThreeDModel() {
 }
 
 export default ThreeDModel;
-
 export const ChatBox = (props: any) => {
   const { onModelChange, imageUrl, onDownload, modelUrl } = props;
   const [message, setMessage] = useState('一只坐着的小狗');
   const handleQuestionChange = (question: string) => {
-    question && setMessage(question);
+    setMessage(question);
   };
   const [isLoading, setIsLoading] = useState(false);
-  const [isResetDisabled, setIsResetDisabled] = useState(true)
+  const [isResetDisabled, setIsResetDisabled] = useState(false)
+  const [isGenDisabled, setIsGenDisabled] = useState(true)
+
+  const [image, setImage] = useState({})
+  const [obj, setObj] = useState({})
+  const basename = 'http://127.0.0.1:8880';
+
   const getChatId = () => {
     let date = new Date()
     return date.getTime()
   }
   const [chatId, setChatId] = useState(getChatId())
+  const [controller, setController] = useState(new AbortController())
+  useEffect(() => {
+    // const source = new AbortController();
+    // setSignal(source.signal)
+  }, [])
   return (
     <div className={styles.chatBox}>
       <div className={styles.optionArea}>
         <div className={styles.title}>语音生成3D模型</div>
         <div className={styles.messageBox}>{message}</div>
         <div className={styles.buttonrow}>
-          <Button
-            disabled={!modelUrl}
-            type={'primary'}
-            style={{ width: '30%', color: '#fff' }}
-            onClick={onDownload}
-          >
-            下载模型
-          </Button>
-          <Button
-            type={'primary'}
-            style={{ width: '30%', color: '#fff' }}
-            onClick={() => {
-              setChatId(getChatId())
-              handleQuestionChange('')
-              setIsResetDisabled(true)
-            }}
-            disabled={isResetDisabled}
-          >
-            重新开始
-          </Button>
+
+
           <ChangeButton
+            signal={controller.signal}
             chatId={chatId}
             type={'primary'}
             style={{ width: '30%', color: '#fff' }}
@@ -236,9 +230,70 @@ export const ChatBox = (props: any) => {
             onLoadingChange={(v: boolean) => {
               setIsLoading(v);
             }}
-            isResetDisabled={!isResetDisabled}
+            setIsGenDisabled={(v) => {
+
+              setIsGenDisabled(v)
+            }}
+            isResetDisabled={isResetDisabled}
             setIsResetDisabled={setIsResetDisabled}
+            setImage={setImage}
+            setObj={setObj}
           ></ChangeButton>
+          <Button type='primary' style={{ width: '30%', color: '#fff' }} disabled={isGenDisabled}
+            onClick={() => {
+              setIsResetDisabled(true)
+              setIsLoading(true)
+              getImage().then((image) => {
+                console.log('image', image);
+                const totalImageUrl = `${basename}/static/output_img/${image}`;
+                //      setImageUrl(totalImageUrl);
+                setImage(totalImageUrl)
+                setIsLoading(false)
+                onModelChange({
+                  imageUrl: totalImageUrl,
+                  objUrl: '',
+                });
+                // onLoadingChange(false);
+
+                getModel(image).then((model) => {
+                  const totalModelUrl = `${basename}/static/output_obj/${model}`;
+                  console.log('model', totalModelUrl);
+                  // setObjUrl(totalModelUrl);
+                  setObj(totalModelUrl)
+                  onModelChange({
+                    imageUrl: totalImageUrl,
+                    objUrl: totalModelUrl,
+                  });
+                  setIsGenDisabled(true)
+                  setIsResetDisabled(false)
+                  // 全部生成后
+                  // handleQuestionChange(`${question}`);
+                  //  setIsResetDisabled(true)
+                  // setStatus(list[0]);
+                }).catch(res => {
+                  //  setStatus(list[0]);
+                  //   setIsResetDisabled(true)
+                })
+              }).catch(res => {
+                // setStatus(list[0]);
+                //   setIsResetDisabled(true)
+              })
+
+
+
+              onModelChange({
+                imageUrl: image,
+                modelUrl: obj
+              })
+            }}>生成</Button>
+          <Button
+            disabled={!modelUrl}
+            type={'primary'}
+            style={{ width: '30%', color: '#fff' }}
+            onClick={onDownload}
+          >
+            下载模型
+          </Button>
         </div>
       </div>
       <>

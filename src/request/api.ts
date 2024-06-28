@@ -31,7 +31,7 @@ export const getQuestion = async (): Promise<string> => {
 // };
 // 获取图片
 export const getImage = async (): Promise<string> => {
-  return await req.get('/get_img');
+  return await req.get('/get_img',);
 };
 // 获取模型
 export const getModel = async (imagePath: string): Promise<string> => {

@@ -86,3 +86,8 @@
   user-select: none;
   cursor: pointer;
 }
+:global {
+  .ant-btn-disabled {
+    background: rgba(0, 0, 0, 1) !important;
+  }
+}
