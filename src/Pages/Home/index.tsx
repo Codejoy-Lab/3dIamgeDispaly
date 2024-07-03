@@ -1,149 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './index.module.scss';
-import * as THREE from 'three';
-// @ts-ignore
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-// @ts-ignore
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
-// import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+
+import Banner from '../../components/Banner';
 import ChangeButton from '../../components/ChangeButton';
 import { Button, Spin } from 'antd';
-import { color } from 'three/examples/jsm/nodes/Nodes.js';
 import { getImage, getModel } from '../../request/api';
+import Three3D from '../../components/Three3D';
+import { message as GlobleTip } from 'antd'
 function ThreeDModel() {
-  const mountRef = useRef<any>(null);
   const [modelUrl, setModelUrl] = useState('/3dModels/model.obj');
   const [imageUrl, setImageUrl] = useState(
-    'http://localhost:5173/3afad671-4cda-4664-be33-eef011d06e51-1.png'
+    '/3afad671-4cda-4664-be33-eef011d06e51-1.png'
   );
 
-  useEffect(() => {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
-      0.1,
-      1000
-    );
-    camera.lookAt(0, 0, 0); // 默认观察场景中心，可以根据需要调整
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    const objLoader = new OBJLoader();
-    // const mtlLoader = new MTLLoader();
-    // const fontLoader = new FontLoader();
-    // 创建网格辅助器
-    var size = 100; // 网格的大小
-    var divisions = 100; // 网格的分割数
-    var gridHelper = new THREE.GridHelper(size, divisions);
-    gridHelper.position.set(0, 0, 10);
-    gridHelper.rotation.x = Math.PI / 2; // 将网格旋转90度，使其与XY平面平行
-    let modelBoundingBox = new THREE.Box3();
-    // fontLoader.load('', function (font: any) {});
-    const light = new THREE.PointLight(0x1e1b1b, 4);
-    const ambientlight = new THREE.AmbientLight(0xffffff, 4);
-    const spotLight = new THREE.SpotLight(0xffffff); // 创建聚光灯
-    // 设置聚光灯的其他属性
-    spotLight.angle = Math.PI / 4; // 设置光锥的角度，单位是弧度，这里是 45 度
-    spotLight.penumbra = 0.2; // 设置光锥的边缘软化程度
-    spotLight.castShadow = true; // 开启阴影投射
-    // 可选：调整聚光灯的阴影投射范围和分辨率
-    spotLight.shadow.mapSize.width = 1024;
-    spotLight.shadow.mapSize.height = 1024;
-    spotLight.shadow.camera.near = 0.5; // 近截面
-    spotLight.shadow.camera.far = 500; // 远截面
-
-    light.position.set(5, 5, 0);
-    renderer.setSize(
-      mountRef.current.clientWidth,
-      mountRef.current.clientHeight
-    );
-    if (mountRef.current) {
-      mountRef.current.appendChild(renderer.domElement);
-    }
-
-    camera.position.set(0, 0, 0);
-    scene.background = new THREE.Color(0x000000);
-    // 将网格添加到场景中
-    window.addEventListener('resize', onWindowResize);
-
-    function onWindowResize() {
-      // 更新相机的长宽比例
-      camera.aspect =
-        mountRef.current.clientWidth / mountRef.current.clientHeight;
-      camera.updateProjectionMatrix();
-      // 更新渲染器的视口大小
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-    const render = () => {
-      requestAnimationFrame(render);
-      const rotationSpeed = 0.01; // 自转速度，可以根据需要调整
-      if (scene.children.length > 0) {
-        const object = scene.children[0]; // 假设你加载的模型是场景中的第一个对象
-        object.rotation.y += rotationSpeed;
-        renderer.render(scene, camera);
-      }
-    };
-    objLoader.load(
-      modelUrl,
-      (object: any) => {
-        scene.add(object); // Assuming 'scene' is your Three.js scene
-        scene.add(light);
-        scene.add(ambientlight);
-        // scene.add(gridHelper);
-        scene.add(spotLight);
-
-        modelBoundingBox.setFromObject(object);
-        // 获取包围盒的尺寸
-        const modelSize = new THREE.Vector3();
-        modelBoundingBox.getSize(modelSize);
-        console.log('模型尺寸:', modelSize);
-        // Adjust camera position
-        const distance = Math.max(modelSize.x, modelSize.y, modelSize.z) * 2;
-        const frontVector = new THREE.Vector3(0, 0, -1);
-        const frontPosition = new THREE.Vector3();
-        object.getWorldPosition(frontPosition);
-        const cameraPosition = frontPosition
-          .clone()
-          .addScaledVector(frontVector, distance);
-        camera.position.copy(cameraPosition);
-        camera.lookAt(frontPosition);
-        //  light.position.set(0, 0, 0); // 假设模型在原点，正前方位置在 z 轴上
-        render();
-        //  animate(object)
-      },
-      (xhr: any) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% of obj loaded');
-      },
-      (error: any) => {
-        console.error('Error loading OBJ', error);
-      }
-    );
-
-    // mtlLoader.load(
-    //   '/3dModels/IronMan/IronMan.mtl',
-    //   (materials: any) => {
-    //     console.log(materials);
-
-    //     materials.preload();
-    //     objLoader.setMaterials(materials);
-
-    //   },
-    //   (xhr: any) => {
-    //     console.log((xhr.loaded / xhr.total) * 100 + '% of MTL loaded');
-    //   },
-    //   (error: any) => {
-    //     console.error('Error loading MTL', error);
-    //   }
-    // );
-    return () => {
-      // 清理工作，避免内存泄漏
-      mountRef.current.removeChild(renderer.domElement);
-      window.removeEventListener('resize', onWindowResize);
-    };
-  }, [modelUrl]);
   const handleModelChange = (obj: { imageUrl: any; objUrl: any }) => {
     const { imageUrl, objUrl } = obj;
-    setModelUrl(objUrl);
-    setImageUrl(imageUrl);
+    objUrl && setModelUrl(objUrl);
+    imageUrl && setImageUrl(imageUrl);
   };
   function downloadFile(url, fileName) {
     // 创建一个a元素
@@ -166,28 +39,35 @@ function ThreeDModel() {
     // 清理
     document.body.removeChild(a);
   }
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div className={styles.container}>
-      <div className={styles.left}>
-        <ChatBox
-          modelUrl={modelUrl}
-          onModelChange={handleModelChange}
-          imageUrl={imageUrl}
-          onDownload={() => {
-            downloadFile(modelUrl, 'model.obj')
-          }}
-        ></ChatBox>
-      </div>
-      <div
-        className={styles.right}
-        style={{ width: '50%', height: '100%' }}
-        ref={mountRef}
-      />
+      {/* <Banner title="语音生成3d模型" style={{ width: '100%' }} /> */}
+      <ChatBox
+        modelUrl={modelUrl}
+        onModelChange={handleModelChange}
+        imageUrl={imageUrl}
+        onDownload={() => {
+          downloadFile(modelUrl, 'model.obj');
+        }}
+      ></ChatBox>
+      <PreViewImage imageUrl={imageUrl} isLoading={isLoading} />
+      <Three3D modelUrl={modelUrl} style={{ width: '30%', height: '100%' }} />
     </div>
   );
 }
 
 export default ThreeDModel;
+
+export const PreViewImage = (props) => {
+  const { isLoading, imageUrl } = props;
+  return (
+    <div className={styles.PreViewImage}>
+      <img width={'100%'} height={'100%'} src={imageUrl} />
+    </div>
+  );
+};
+
 export const ChatBox = (props: any) => {
   const { onModelChange, imageUrl, onDownload, modelUrl } = props;
   const [message, setMessage] = useState('一只坐着的小狗');
@@ -195,120 +75,98 @@ export const ChatBox = (props: any) => {
     setMessage(question);
   };
   const [isLoading, setIsLoading] = useState(false);
-  const [isResetDisabled, setIsResetDisabled] = useState(false)
-  const [isGenDisabled, setIsGenDisabled] = useState(true)
+  const [isResetDisabled, setIsResetDisabled] = useState(false);
+  const [isGenDisabled, setIsGenDisabled] = useState(true);
 
-  const [image, setImage] = useState({})
-  const [obj, setObj] = useState({})
+  const [image, setImage] = useState('');
+  const [obj, setObj] = useState('');
   const basename = 'http://127.0.0.1:8880';
 
   const getChatId = () => {
-    let date = new Date()
-    return date.getTime()
-  }
-  const [chatId, setChatId] = useState(getChatId())
-  const [controller, setController] = useState(new AbortController())
+    let date = new Date();
+    return date.getTime();
+  };
+  const [chatId, setChatId] = useState(getChatId());
+  const [controller, setController] = useState(new AbortController());
   useEffect(() => {
     // const source = new AbortController();
     // setSignal(source.signal)
-  }, [])
+  }, []);
   return (
     <div className={styles.chatBox}>
       <div className={styles.optionArea}>
         <div className={styles.title}>语音生成3D模型</div>
         <div className={styles.messageBox}>{message}</div>
         <div className={styles.buttonrow}>
-
-
           <ChangeButton
             signal={controller.signal}
             chatId={chatId}
             type={'primary'}
-            style={{ width: '30%', color: '#fff' }}
+            style={{ width: '30%',height: '3rem', color: '#fff' }}
             onQuestionChange={handleQuestionChange}
             onModelChange={onModelChange}
             onLoadingChange={(v: boolean) => {
               setIsLoading(v);
             }}
             setIsGenDisabled={(v) => {
-
-              setIsGenDisabled(v)
+              setIsGenDisabled(v);
             }}
             isResetDisabled={isResetDisabled}
             setIsResetDisabled={setIsResetDisabled}
             setImage={setImage}
             setObj={setObj}
           ></ChangeButton>
-          <Button type='primary' style={{ width: '30%', color: '#fff' }} disabled={isGenDisabled}
+          <Button
+            type="primary"
+            style={{ width: '30%',height: '3rem', color: '#fff' }}
+            disabled={isGenDisabled}
             onClick={() => {
-              setIsResetDisabled(true)
-              setIsLoading(true)
-              getImage().then((image) => {
-                console.log('image', image);
-                const totalImageUrl = `${basename}/static/output_img/${image}`;
-                //      setImageUrl(totalImageUrl);
-                setImage(totalImageUrl)
-                setIsLoading(false)
-                onModelChange({
-                  imageUrl: totalImageUrl,
-                  objUrl: '',
-                });
-                // onLoadingChange(false);
-
-                getModel(image).then((model) => {
-                  const totalModelUrl = `${basename}/static/output_obj/${model}`;
-                  console.log('model', totalModelUrl);
-                  // setObjUrl(totalModelUrl);
-                  setObj(totalModelUrl)
+              setIsResetDisabled(true);
+              setIsLoading(true);
+              getImage()
+                .then((image) => {
+                  console.log('image', image);
+                  const totalImageUrl = `${basename}/static/output_img/${image}`;
+                  setImage(totalImageUrl);
+                  setIsLoading(false);
                   onModelChange({
                     imageUrl: totalImageUrl,
-                    objUrl: totalModelUrl,
+                    objUrl: '',
                   });
-                  setIsGenDisabled(true)
-                  setIsResetDisabled(false)
-                  // 全部生成后
-                  // handleQuestionChange(`${question}`);
-                  //  setIsResetDisabled(true)
-                  // setStatus(list[0]);
-                }).catch(res => {
-                  //  setStatus(list[0]);
-                  //   setIsResetDisabled(true)
+
+                  getModel(image)
+                    .then((model) => {
+                      const totalModelUrl = `${basename}/static/output_obj/${model}`;
+                      console.log('model', totalModelUrl);
+                      // setObjUrl(totalModelUrl);
+                      setObj(totalModelUrl);
+                      onModelChange({
+                        imageUrl: totalImageUrl,
+                        objUrl: totalModelUrl,
+                      });
+                      setIsGenDisabled(true);
+                      setIsResetDisabled(false);
+                    })
+                    .catch((res) => {});
                 })
-              }).catch(res => {
-                // setStatus(list[0]);
-                //   setIsResetDisabled(true)
-              })
-
-
-
-              onModelChange({
-                imageUrl: image,
-                modelUrl: obj
-              })
-            }}>生成</Button>
+                .catch((res) => {
+                  GlobleTip.error('生成失败，请重试', 1.5);
+                
+                });
+            }}
+          >
+            生成
+          </Button>
           <Button
             disabled={!modelUrl}
             type={'primary'}
-            style={{ width: '30%', color: '#fff' }}
+            style={{ width: '30%', height: '3rem',color: '#fff' }}
             onClick={onDownload}
           >
             下载模型
           </Button>
         </div>
       </div>
-      <>
-        {!isLoading ? (
-          <>
-            {imageUrl ? (
-              <img className={styles.previewImage} src={imageUrl} />
-            ) : null}
-          </>
-        ) : (
-          <div className={styles.previewImage}>
-            <Spin />
-          </div>
-        )}
-      </>
     </div>
   );
 };

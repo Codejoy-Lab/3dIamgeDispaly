@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const req = axios.create({
-    baseURL: 'http://127.0.0.1:8880/api'
+    baseURL: `${import.meta.env.VITE_API_URL}/api`
 })
 req.interceptors.response.use(
     function(response) {
