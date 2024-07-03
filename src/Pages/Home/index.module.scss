@@ -11,7 +11,7 @@
 
 .chatBox {
   width: 30vw;
-  height: 40vh;
+  height: 50vh;
   //z-index: 1000;
   background-color: #1b1d1e;
   // position: absolute;
@@ -42,7 +42,7 @@
   // width: 100%;
   margin: 20px;
   color: #ffffff;
-  font-size: large;
+  font-size: 2rem;
   white-space: 10px;
 }
 .messageBox {
@@ -50,6 +50,7 @@
   margin: 20px;
   height: 40%;
   flex: 1;
+  font-size: 1.5rem;
   border-radius: 10px;
   background-color: rgb(73, 79, 79);
   color: #ffffff;
@@ -76,11 +77,20 @@
 
 .PreViewImage {
   width: 30vw;
-  height: 40vh;
-  background-color: red;
+  height: 50vh;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 10px;
   overflow: hidden;
+  .loading{
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background-color:aliceblue;
+  }
 }

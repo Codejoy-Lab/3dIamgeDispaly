@@ -6,7 +6,7 @@ import ChangeButton from '../../components/ChangeButton';
 import { Button, Spin } from 'antd';
 import { getImage, getModel } from '../../request/api';
 import Three3D from '../../components/Three3D';
-import { message as GlobleTip } from 'antd'
+import { message as GlobleTip } from 'antd';
 function ThreeDModel() {
   const [modelUrl, setModelUrl] = useState('/3dModels/model.obj');
   const [imageUrl, setImageUrl] = useState(
@@ -15,6 +15,8 @@ function ThreeDModel() {
 
   const handleModelChange = (obj: { imageUrl: any; objUrl: any }) => {
     const { imageUrl, objUrl } = obj;
+    console.log('data====', { imageUrl, objUrl });
+
     objUrl && setModelUrl(objUrl);
     imageUrl && setImageUrl(imageUrl);
   };
@@ -42,11 +44,12 @@ function ThreeDModel() {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <div className={styles.container}>
-      {/* <Banner title="语音生成3d模型" style={{ width: '100%' }} /> */}
+      <Banner title="“言出法随！！！”" style={{ width: '100%' }} />
       <ChatBox
         modelUrl={modelUrl}
         onModelChange={handleModelChange}
         imageUrl={imageUrl}
+        setIsLoading={setIsLoading}
         onDownload={() => {
           downloadFile(modelUrl, 'model.obj');
         }}
@@ -63,24 +66,30 @@ export const PreViewImage = (props) => {
   const { isLoading, imageUrl } = props;
   return (
     <div className={styles.PreViewImage}>
-      <img width={'100%'} height={'100%'} src={imageUrl} />
+      {!isLoading ? (
+        <>{imageUrl ? <img width={'100%'} src={imageUrl} /> : null}</>
+      ) : (
+        <div className={styles.loading}>
+          <Spin />
+        </div>
+      )}
     </div>
   );
 };
 
 export const ChatBox = (props: any) => {
-  const { onModelChange, imageUrl, onDownload, modelUrl } = props;
+  const { onModelChange, onDownload, modelUrl, setIsLoading } = props;
   const [message, setMessage] = useState('一只坐着的小狗');
   const handleQuestionChange = (question: string) => {
     setMessage(question);
   };
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [isResetDisabled, setIsResetDisabled] = useState(false);
   const [isGenDisabled, setIsGenDisabled] = useState(true);
 
   const [image, setImage] = useState('');
   const [obj, setObj] = useState('');
-  const basename = 'http://127.0.0.1:8880';
+  const basename = import.meta.env.VITE_API_URL;
 
   const getChatId = () => {
     let date = new Date();
@@ -95,14 +104,19 @@ export const ChatBox = (props: any) => {
   return (
     <div className={styles.chatBox}>
       <div className={styles.optionArea}>
-        <div className={styles.title}>语音生成3D模型</div>
+        <div className={styles.title}>说出你想要的模型吧</div>
         <div className={styles.messageBox}>{message}</div>
         <div className={styles.buttonrow}>
           <ChangeButton
             signal={controller.signal}
             chatId={chatId}
             type={'primary'}
-            style={{ width: '30%',height: '3rem', color: '#fff' }}
+            style={{
+              width: '30%',
+              height: '3rem',
+              fontSize: '1.5rem',
+              color: '#fff',
+            }}
             onQuestionChange={handleQuestionChange}
             onModelChange={onModelChange}
             onLoadingChange={(v: boolean) => {
@@ -118,7 +132,12 @@ export const ChatBox = (props: any) => {
           ></ChangeButton>
           <Button
             type="primary"
-            style={{ width: '30%',height: '3rem', color: '#fff' }}
+            style={{
+              width: '30%',
+              height: '3rem',
+              fontSize: '1.5rem',
+              color: '#fff',
+            }}
             disabled={isGenDisabled}
             onClick={() => {
               setIsResetDisabled(true);
@@ -147,11 +166,14 @@ export const ChatBox = (props: any) => {
                       setIsGenDisabled(true);
                       setIsResetDisabled(false);
                     })
-                    .catch((res) => {});
+                    .catch((res) => {
+                      setIsLoading(false);
+                      GlobleTip.error('生成失败，请重试', 1.5);
+                    });
                 })
                 .catch((res) => {
                   GlobleTip.error('生成失败，请重试', 1.5);
-                
+                  setIsLoading(false);
                 });
             }}
           >
@@ -160,7 +182,12 @@ export const ChatBox = (props: any) => {
           <Button
             disabled={!modelUrl}
             type={'primary'}
-            style={{ width: '30%', height: '3rem',color: '#fff' }}
+            style={{
+              width: '30%',
+              height: '3rem',
+              fontSize: '1.5rem',
+              color: '#fff',
+            }}
             onClick={onDownload}
           >
             下载模型
