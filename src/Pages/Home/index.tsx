@@ -44,7 +44,7 @@ function ThreeDModel() {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <div className={styles.container}>
-      <Banner title="“言出法随！！！”" style={{ width: '100%' }} />
+      <Banner title="AI 3D 模型生成" style={{ width: '100%' }} />
       <ChatBox
         modelUrl={modelUrl}
         onModelChange={handleModelChange}
