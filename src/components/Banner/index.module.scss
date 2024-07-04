@@ -11,7 +11,7 @@
   background-color: #000;
   // background-image: url('/images/logo-codejoy.png');
   .title {
-    font-family: 'CustomBannerTitleFont', Arial, sans-serif;
+    font-family: "CustomBannerTitleFont", Arial, sans-serif;
     user-select: none;
     padding: 0 20px;
     font-size: 5vw;
@@ -19,9 +19,17 @@
     color: #fff;
     // text-shadow: 3px 3px 0 #f00, 6px 6px 0 #0f0, 9px 9px 0 #00f,
     //   12px 12px 0 #ff0, 15px 15px 0 #0ff, 18px 18px 0 #f0f;
-    perspective: 1000px;
-    transform-style: preserve-3d;
-    transform: translateZ(-20px);
+    // text-shadow: 
+    //     3px 3px 0 rgba(0,0,0,0.1),
+    //     6px 6px 0 rgba(0,0,0,0.2),
+    //     9px 9px 0 rgba(0,0,0,0.3),
+    //     12px 12px 0 rgba(0,0,0,0.4);
+    // perspective: 100%;
+    // transform-style: preserve-3d;
+    // transform: translateZ(-20px);
+    // perspective: 1000px;
+    // transform-style: preserve-3d;
+    // transform: translateZ(-20px);
     background-image: linear-gradient(
       to right,
       #87cefa,
