@@ -1,9 +1,14 @@
 
+import {useEffect} from 'react'
 import './App.css';
-import Home from './Pages/Home';
-function App() {
-  console.log('meta.env.VITE_API_URL',import.meta.env.VITE_API_URL); 
-  return <Home></Home>;
-}
+import { RouterProvider } from 'react-router-dom';
+import router from '@/router';
 
+function App() {
+  useEffect(() =>{
+    console.log('init');
+    
+  }, [])
+  return <RouterProvider router={router} />;
+}
 export default App;

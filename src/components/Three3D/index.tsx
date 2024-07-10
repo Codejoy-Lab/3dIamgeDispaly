@@ -9,16 +9,19 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 export default (props) => {
   const { modelUrl, style={} } = props;
   const mountRef = useRef<any>(null);
+  const rendererRef = useRef<any>(null);
+  const cameraRef = useRef<any>(null);
+  const modelRef = useRef<any>(null);
   useEffect(() => {
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
+    cameraRef.current = new THREE.PerspectiveCamera(
       75,
       mountRef.current.clientWidth / mountRef.current.clientHeight,
       0.1,
       1000
     );
-    camera.lookAt(0, 0, 0); // 默认观察场景中心，可以根据需要调整
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    cameraRef.current.lookAt(0, 0, 0); // 默认观察场景中心，可以根据需要调整
+    rendererRef.current = new THREE.WebGLRenderer({ antialias: true });
     const objLoader = new OBJLoader();
     // const mtlLoader = new MTLLoader();
     // const fontLoader = new FontLoader();
@@ -44,26 +47,26 @@ export default (props) => {
     spotLight.shadow.camera.far = 500; // 远截面
 
     light.position.set(5, 5, 0);
-    renderer.setSize(
+    rendererRef.current.setSize(
       mountRef.current.clientWidth,
       mountRef.current.clientHeight
     );
     if (mountRef.current) {
-      mountRef.current.appendChild(renderer.domElement);
+      mountRef.current.appendChild(rendererRef.current.domElement);
     }
 
-    camera.position.set(0, 0, 0);
+    cameraRef.current.position.set(0, 0, 0);
     scene.background = new THREE.Color(0x000000);
     // 将网格添加到场景中
     window.addEventListener('resize', onWindowResize);
 
     function onWindowResize() {
       // 更新相机的长宽比例
-      camera.aspect =
+      cameraRef.current.aspect =
         mountRef.current.clientWidth / mountRef.current.clientHeight;
-      camera.updateProjectionMatrix();
+        cameraRef.current.updateProjectionMatrix();
       // 更新渲染器的视口大小
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
     }
     const render = () => {
       requestAnimationFrame(render);
@@ -71,12 +74,13 @@ export default (props) => {
       if (scene.children.length > 0) {
         const object = scene.children[0]; // 假设你加载的模型是场景中的第一个对象
         object.rotation.y += rotationSpeed;
-        renderer.render(scene, camera);
+        rendererRef.current.render(scene, cameraRef.current);
       }
     };
     objLoader.load(
       modelUrl,
       (object: any) => {
+        modelRef.current = object;
         scene.add(object); // Assuming 'scene' is your Three.js scene
         scene.add(light);
         scene.add(ambientlight);
@@ -96,8 +100,8 @@ export default (props) => {
         const cameraPosition = frontPosition
           .clone()
           .addScaledVector(frontVector, distance);
-        camera.position.copy(cameraPosition);
-        camera.lookAt(frontPosition);
+          cameraRef.current.position.copy(cameraPosition);
+          cameraRef.current.lookAt(frontPosition);
         //  light.position.set(0, 0, 0); // 假设模型在原点，正前方位置在 z 轴上
         render();
         //  animate(object)
@@ -128,10 +132,30 @@ export default (props) => {
     // );
     return () => {
       // 清理工作，避免内存泄漏
-      mountRef.current.removeChild(renderer.domElement);
+      mountRef.current &&  mountRef.current.removeChild(rendererRef.current.domElement);
       window.removeEventListener('resize', onWindowResize);
     };
   }, [modelUrl]);
+  const adjustModelSize=()=>{
+    const box = new THREE.Box3().setFromObject(modelRef.current);
+    const size = box.getSize(new THREE.Vector3()).length();
+    const scale = Math.min(window.innerWidth, window.innerHeight) / size;
+
+    modelRef.current.scale.set(scale, scale, scale);
+  }
+  const onWindowResize = ()=>{
+    cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+    cameraRef.current.updateProjectionMatrix();
+
+    // 调整渲染器的大小
+    rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    
+    // 可选：重新计算模型的缩放  
+    adjustModelSize()
+  }
+ 
+  window.addEventListener('resize', onWindowResize);
+
   return (
     <div
       style={style}
