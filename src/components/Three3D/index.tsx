@@ -1,13 +1,16 @@
-import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
 // @ts-ignore
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 // @ts-ignore
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 // import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-
-export default (props) => {
-  const { modelUrl, style={} } = props;
+interface Three3DProps {
+  modelUrl: string;
+  style: any;
+}
+export default (props: Three3DProps) => {
+  const { modelUrl, style = {} } = props;
   const mountRef = useRef<any>(null);
   const rendererRef = useRef<any>(null);
   const cameraRef = useRef<any>(null);
@@ -58,13 +61,13 @@ export default (props) => {
     cameraRef.current.position.set(0, 0, 0);
     scene.background = new THREE.Color(0x000000);
     // 将网格添加到场景中
-    window.addEventListener('resize', onWindowResize);
+    window.addEventListener("resize", onWindowResize);
 
     function onWindowResize() {
       // 更新相机的长宽比例
       cameraRef.current.aspect =
         mountRef.current.clientWidth / mountRef.current.clientHeight;
-        cameraRef.current.updateProjectionMatrix();
+      cameraRef.current.updateProjectionMatrix();
       // 更新渲染器的视口大小
       rendererRef.current.setSize(window.innerWidth, window.innerHeight);
     }
@@ -91,7 +94,7 @@ export default (props) => {
         // 获取包围盒的尺寸
         const modelSize = new THREE.Vector3();
         modelBoundingBox.getSize(modelSize);
-        console.log('模型尺寸:', modelSize);
+        console.log("模型尺寸:", modelSize);
         // Adjust camera position
         const distance = Math.max(modelSize.x, modelSize.y, modelSize.z) * 2;
         const frontVector = new THREE.Vector3(0, 0, -1);
@@ -100,17 +103,17 @@ export default (props) => {
         const cameraPosition = frontPosition
           .clone()
           .addScaledVector(frontVector, distance);
-          cameraRef.current.position.copy(cameraPosition);
-          cameraRef.current.lookAt(frontPosition);
+        cameraRef.current.position.copy(cameraPosition);
+        cameraRef.current.lookAt(frontPosition);
         //  light.position.set(0, 0, 0); // 假设模型在原点，正前方位置在 z 轴上
         render();
         //  animate(object)
       },
       (xhr: any) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% of obj loaded');
+        console.log((xhr.loaded / xhr.total) * 100 + "% of obj loaded");
       },
       (error: any) => {
-        console.error('Error loading OBJ', error);
+        console.error("Error loading OBJ", error);
       }
     );
 
@@ -132,34 +135,30 @@ export default (props) => {
     // );
     return () => {
       // 清理工作，避免内存泄漏
-      mountRef.current &&  mountRef.current.removeChild(rendererRef.current.domElement);
-      window.removeEventListener('resize', onWindowResize);
+      mountRef.current &&
+        mountRef.current.removeChild(rendererRef.current.domElement);
+      window.removeEventListener("resize", onWindowResize);
     };
   }, [modelUrl]);
-  const adjustModelSize=()=>{
+  const adjustModelSize = () => {
     const box = new THREE.Box3().setFromObject(modelRef.current);
     const size = box.getSize(new THREE.Vector3()).length();
     const scale = Math.min(window.innerWidth, window.innerHeight) / size;
 
     modelRef.current.scale.set(scale, scale, scale);
-  }
-  const onWindowResize = ()=>{
+  };
+  const onWindowResize = () => {
     cameraRef.current.aspect = window.innerWidth / window.innerHeight;
     cameraRef.current.updateProjectionMatrix();
 
     // 调整渲染器的大小
     rendererRef.current.setSize(window.innerWidth, window.innerHeight);
-    
-    // 可选：重新计算模型的缩放  
-    adjustModelSize()
-  }
- 
-  window.addEventListener('resize', onWindowResize);
 
-  return (
-    <div
-      style={style}
-      ref={mountRef}
-    ></div>
-  );
+    // 可选：重新计算模型的缩放
+    adjustModelSize();
+  };
+
+  window.addEventListener("resize", onWindowResize);
+
+  return <div style={style} ref={mountRef}></div>;
 };

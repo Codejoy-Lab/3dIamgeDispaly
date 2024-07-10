@@ -1,6 +1,7 @@
 .container {
     width: 100vw;
     height: 100vh;
+    background-color: #000;
 }
 
 .left {
@@ -9,11 +10,17 @@
 }
 
 .uploadContainer {
-    height: 200px !important;
-    width: 200px !important;
+    height: 200px;
+    width: 200px;
+    background-color: #e3e3e3;
+    border-radius: 10px;
+    overflow: hidden;
+
 }
 
 .right {
     width: 50%;
     height: 100%;
 }
+
+.ButtonRow {}
