@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "@/Pages/Home";
 import ImageToModel from "@/Pages/ImageToModel";
-import TextToModel from "@/Pages/TextToModel";
+import TextToModel from "@/Pages/TextToModel_";
 
 const router = createBrowserRouter([
   {

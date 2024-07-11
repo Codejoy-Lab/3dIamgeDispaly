@@ -1,17 +1,36 @@
-import React from "react";
-import { Progress } from "antd";
+import React, { useRef } from "react";
+import { Slider } from "antd";
+import type { SliderSingleProps } from "antd";
 
 import styles from "./index.module.scss";
 interface BarProps {
   value: number;
-  onChange: (value: number) => void;
+  name: string;
+  onChange: (data: { value: number; name: string }) => void;
+  range: number[];
+  step?: number;
 }
 export default (props: BarProps) => {
-  const { value, onChange } = props;
+  const { value, onChange, range, name, step = 0.1 } = props;
+  const barRef = useRef();
   return (
     <div className={styles.container}>
-      <div className={styles.button}></div>
-      <Progress percent={value}></Progress>
+      <Slider
+        step={step}
+        min={range[0]}
+        max={range[1]}
+        tooltip={{ formatter }}
+        onChange={(v) => {
+          const data = {
+            value: v,
+            name,
+          };
+          onChange(data);
+        }}
+      />
     </div>
   );
 };
+const formatter: NonNullable<SliderSingleProps["tooltip"]>["formatter"] = (
+  value
+) => `${value}`;
