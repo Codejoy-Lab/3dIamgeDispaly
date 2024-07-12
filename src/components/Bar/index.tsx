@@ -20,6 +20,7 @@ export default (props: BarProps) => {
         min={range[0]}
         max={range[1]}
         tooltip={{ formatter }}
+        value={value}
         onChange={(v) => {
           const data = {
             value: v,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import styles from "./index.module.scss";
 import { InboxOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Image, Upload, message, Radio, RadioChangeEvent } from "antd";
@@ -42,7 +42,6 @@ export default () => {
         <div className={styles.collapse}>
           <Collapse onChange={() => {}} items={items}></Collapse>
         </div>
-
         <ButtonRow></ButtonRow>
       </div>
       <div className={styles.right}>
@@ -66,6 +65,7 @@ const StyleSelcted: React.FC = (props) => {
     {
       name: "a",
       label: "A : Head-to-body height ratio:",
+      title: "头身高比",
       value: 1,
       range: [0, 2],
     },
@@ -74,18 +74,21 @@ const StyleSelcted: React.FC = (props) => {
       label: "B: Head-to-body width ratio:",
       value: 1,
       range: [0, 2],
+      title: "头部与身体宽度比",
     },
     {
       name: "c",
       label: "C : Legs-to-body height ratio:",
       value: 1,
       range: [0, 2],
+      title: "腿身高比",
     },
     {
       name: "d",
       label: "D: Arms-to-body length ratio:",
       value: 1,
       range: [0, 2],
+      title: "手臂与身体长度比",
     },
     {
       name: "e",
@@ -93,6 +96,7 @@ const StyleSelcted: React.FC = (props) => {
         "E : Span of two legs, range from 0 to 15, default 9 if not specified:",
       value: 9,
       range: [0, 15],
+      title: "两条腿的跨度，范围从0到15",
     },
   ];
   const [modelType, setModelType] = useState(1);
@@ -118,7 +122,7 @@ const StyleSelcted: React.FC = (props) => {
   return (
     <div className={styles.StyleSelcted}>
       <div className={styles.typeSelected}>
-        <div className={styles.typeHeader}>模型类别</div>
+        <div className={styles.typeHeader}>模型类别：</div>
         <Radio.Group onChange={handleTypeChange} value={modelType}>
           <Radio value={1}>物品模型</Radio>
           <Radio value={2}>人物模型</Radio>
@@ -129,7 +133,7 @@ const StyleSelcted: React.FC = (props) => {
           ? list.map((item) => {
               return (
                 <div key={item.label}>
-                  <span className={styles.typeLabel}>{`${item.label}  ${
+                  <span className={styles.typeLabel}>{`${item.title}  ${
                     valueObj[item.name]
                   }`}</span>
                   <Bar
@@ -237,4 +241,11 @@ const TextArea = () => {
       placeholder="输入你想生成的3d模型，比如“一只小狗”"
     ></textarea>
   );
+};
+interface ItemWrapProps {
+  children: ReactNode;
+}
+const ItemWrap = (props: ItemWrapProps) => {
+  const { children } = props;
+  return <div className={styles.ItemWrap}>{children}</div>;
 };

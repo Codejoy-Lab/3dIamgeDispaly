@@ -24,6 +24,7 @@
 
 .collapse {
     width: 100%;
+
     height: calc(100% - 100px);
     overflow: scroll;
 }
@@ -66,7 +67,8 @@
 
 .textarea {
     outline: none !important;
-    width: 100%;
+    width: calc(100% - 20px);
+
     resize: vertical;
     border-radius: 5px;
     padding: 10px;
@@ -89,7 +91,7 @@
 }
 
 .typeHeader {
-    padding: 10px 0;
+    padding: 20px 0;
 }
 
 .typeLabel {
@@ -102,7 +104,8 @@
 
     .textarea {
         outline: none !important;
-        width: 100%;
+        width: calc(100% - 20px);
+
         resize: vertical;
         border-radius: 5px;
         padding: 10px;
@@ -120,4 +123,11 @@
 
 .HighLevelSettingTitle {
     padding: 10px 0;
+}
+
+.ItemWrap {
+    width: 100%;
+    height: auto;
+    // background-color: #1677FF;    border-radius: 10px;
+    // padding-right: 20px;    ;
 }

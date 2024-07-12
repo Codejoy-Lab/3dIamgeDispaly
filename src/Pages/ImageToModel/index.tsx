@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import styles from "./index.module.scss";
 import { InboxOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Image, Upload, message, Radio, RadioChangeEvent } from "antd";
@@ -6,6 +6,7 @@ import Three3D from "@/components/Three3D";
 import Collapse from "@/components/Collapse";
 import Bar from "@/components/Bar";
 import type { GetProp, UploadFile, UploadProps, CollapseProps } from "antd";
+import { log } from "three/examples/jsm/nodes/Nodes.js";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 export default () => {
@@ -18,20 +19,33 @@ export default () => {
     {
       label: "图片",
       key: 1,
-      children: <UploadImage />,
+      //  children: <UploadImage />,
+      children: (
+        <ItemWrap>
+          <UploadImage />
+        </ItemWrap>
+      ),
       style: panelStyle,
     },
     {
       label: "风格",
       key: 2,
-      children: <StyleSelcted />,
+      children: (
+        <ItemWrap>
+          <StyleSelcted />
+        </ItemWrap>
+      ),
       style: panelStyle,
     },
 
     {
       label: "高级设置",
       key: 3,
-      children: <HighLevelSetting />,
+      children: (
+        <ItemWrap>
+          <HighLevelSetting />
+        </ItemWrap>
+      ),
       style: panelStyle,
     },
   ];
@@ -66,6 +80,7 @@ const StyleSelcted: React.FC = (props) => {
     {
       name: "a",
       label: "A : Head-to-body height ratio:",
+      title: "头身高比",
       value: 1,
       range: [0, 2],
     },
@@ -74,18 +89,21 @@ const StyleSelcted: React.FC = (props) => {
       label: "B: Head-to-body width ratio:",
       value: 1,
       range: [0, 2],
+      title: "头部与身体宽度比",
     },
     {
       name: "c",
       label: "C : Legs-to-body height ratio:",
       value: 1,
       range: [0, 2],
+      title: "腿身高比",
     },
     {
       name: "d",
       label: "D: Arms-to-body length ratio:",
       value: 1,
       range: [0, 2],
+      title: "手臂与身体长度比",
     },
     {
       name: "e",
@@ -93,6 +111,7 @@ const StyleSelcted: React.FC = (props) => {
         "E : Span of two legs, range from 0 to 15, default 9 if not specified:",
       value: 9,
       range: [0, 15],
+      title: "两条腿的跨度，范围从0到15",
     },
   ];
   const [modelType, setModelType] = useState(1);
@@ -129,12 +148,12 @@ const StyleSelcted: React.FC = (props) => {
           ? list.map((item) => {
               return (
                 <div key={item.label}>
-                  <span className={styles.typeLabel}>{`${item.label}  ${
+                  <span className={styles.typeLabel}>{`${item.title}  ${
                     valueObj[item.name]
                   }`}</span>
                   <Bar
                     name={item.name}
-                    value={item.value}
+                    value={valueObj[item.name]}
                     range={item.range}
                     onChange={handleValueChange}
                   />
@@ -228,4 +247,12 @@ const HighLevelSetting = () => {
       ></textarea>
     </div>
   );
+};
+
+interface ItemWrapProps {
+  children: ReactNode;
+}
+const ItemWrap = (props: ItemWrapProps) => {
+  const { children } = props;
+  return <div className={styles.ItemWrap}>{children}</div>;
 };
