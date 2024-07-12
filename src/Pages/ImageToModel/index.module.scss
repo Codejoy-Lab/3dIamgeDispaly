@@ -16,24 +16,18 @@
 }
 
 .title {
-    color: #fff;
     width: 100%;
+    height: 50px;
+    color: #fff;
     text-align: center;
 }
 
-.uploadContainer {
-    height: 200px;
-    width: 200px;
-    background-color: #e3e3e3;
-    border-radius: 10px;
-    overflow: hidden;
-
+.collapse {
+    width: 100%;
+    height: calc(100% - 100px);
+    overflow: scroll;
 }
 
-.right {
-    width: 70%;
-    height: 100%;
-}
 
 .ButtonRow {
     width: 100%;
@@ -53,6 +47,21 @@
         user-select: none;
         cursor: pointer;
     }
+}
+
+
+.uploadContainer {
+    height: 200px;
+    width: 200px;
+    background-color: #e3e3e3;
+    border-radius: 10px;
+    overflow: hidden;
+
+}
+
+.right {
+    width: 70%;
+    height: 100%;
 }
 
 

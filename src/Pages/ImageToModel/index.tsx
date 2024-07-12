@@ -8,8 +8,6 @@ import Bar from "@/components/Bar";
 import type { GetProp, UploadFile, UploadProps, CollapseProps } from "antd";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
-const { Dragger } = Upload;
-
 export default () => {
   const panelStyle: React.CSSProperties = {
     padding: "20px",
@@ -41,7 +39,7 @@ export default () => {
     <div className={styles.container}>
       <div className={styles.left}>
         <div className={styles.title}>AI生成3d模型</div>
-        <div>
+        <div className={styles.collapse}>
           <Collapse onChange={() => {}} items={items}></Collapse>
         </div>
 
