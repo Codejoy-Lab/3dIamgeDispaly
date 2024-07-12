@@ -1,8 +1,12 @@
-import React from 'react';
-import styles from './index.module.scss';
+import React from "react";
+import styles from "./index.module.scss";
 
-export default (props) => {
-  const { title = '', style = {} } = props;
+interface BannerProps {
+  title: string;
+  style: React.CSSProperties;
+}
+export default (props: BannerProps) => {
+  const { title = "", style = {} } = props;
   const Title = title;
   return (
     <div className={styles.container} style={style}>

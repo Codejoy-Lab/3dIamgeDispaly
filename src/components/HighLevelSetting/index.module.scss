@@ -1,0 +1,25 @@
+.HighLevelSetting {
+    width: 100%;
+    height: 100%;
+
+    .textarea {
+        outline: none !important;
+        width: calc(100% - 20px);
+        resize: vertical;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 1rem;
+
+        &:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+    }
+
+
+}
+
+.HighLevelSettingTitle {
+    padding: 10px 0;
+}

@@ -5,14 +5,16 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
+  background-color: #000;
 }
+
 .Button {
   width: 20vw;
   height: 20vw;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: aquamarine;
+  background-color: rgb(47, 80, 227);
   color: #fff;
   border-radius: 10px;
   overflow: hidden;

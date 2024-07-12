@@ -21,3 +21,11 @@ export default (props) => {
     </div>
   );
 };
+
+interface ItemWrapProps {
+  children: ReactNode;
+}
+export const ItemWrap = (props: ItemWrapProps) => {
+  const { children } = props;
+  return <div className={styles.ItemWrap}>{children}</div>;
+};

@@ -4,7 +4,8 @@
     padding: 20px 0;
     background-color: #000;
     display: flex;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -60,10 +61,6 @@
 
 }
 
-.right {
-    width: 70%;
-    height: 100%;
-}
 
 .textarea {
     outline: none !important;
@@ -130,4 +127,13 @@
     height: auto;
     // background-color: #1677FF;    border-radius: 10px;
     // padding-right: 20px;    ;
+}
+
+
+
+.right {
+    width: 68%;
+    height: 100%;
+    background-color: #1677FF;
+    border-radius: 10px;
 }
