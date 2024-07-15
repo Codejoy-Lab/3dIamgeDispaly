@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import styles from "./index.module.scss";
 import Collapse, { ItemWrap } from "@/components/Collapse";
 import type { GetProp, UploadProps, CollapseProps } from "antd";
@@ -11,6 +11,13 @@ import Banner from "@/components/Banner";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 export default () => {
+  const data = useRef({
+    prompt: "",
+    style: {
+      type: 1,
+    },
+    setting: "",
+  });
   const panelStyle: React.CSSProperties = {
     padding: "20px",
     color: "#fff",
@@ -26,28 +33,34 @@ export default () => {
       ),
       style: panelStyle,
     },
-    {
-      label: "风格",
-      key: 2,
-      children: (
-        <ItemWrap>
-          <StyleSelcted onChange={(v) => {}} />
-        </ItemWrap>
-      ),
-      style: panelStyle,
-    },
 
     {
       label: "高级设置",
-      key: 3,
+      key: 2,
       children: (
-        <ItemWrap>
-          <HighLevelSetting onChange={(v) => {}} />
-        </ItemWrap>
+        <>
+          <ItemWrap>
+            <StyleSelcted
+              onChange={(v) => {
+                data.current.style = v;
+              }}
+            />
+          </ItemWrap>
+          <ItemWrap>
+            <HighLevelSetting
+              onChange={(v) => {
+                data.current.setting = v;
+              }}
+            />
+          </ItemWrap>
+        </>
       ),
       style: panelStyle,
     },
   ];
+  const handleSubmit = () => {
+    console.log("submit", data.current);
+  };
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -58,7 +71,7 @@ export default () => {
         <div className={styles.collapse}>
           <Collapse onChange={() => {}} items={items}></Collapse>
         </div>
-        <ButtonRow />
+        <ButtonRow onSubmit={handleSubmit} />
       </div>
       <div className={styles.right}>
         {/* <Three3D modelUrl={"#"} style={{ width: "100%", height: "100%" }} /> */}

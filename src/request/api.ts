@@ -1,12 +1,12 @@
-import req from '.';
+import req from ".";
 
 //语音识别
 export const startTapeApi = async () => {
-  return await req.post('/start_asr');
+  return await req.post("/start_asr");
 };
 // 关闭语音识别
 export const stopTapeApi = async () => {
-  return await req.post('/stop_asr');
+  return await req.post("/stop_asr");
 };
 
 //调用大模型 返回answer
@@ -19,7 +19,7 @@ export const callLlm = async (
 
 // 获取语音识别的question
 export const getQuestion = async (): Promise<string> => {
-  return await req.get('/question');
+  return await req.get("/question");
 };
 // // 获取语音识别的answer
 // export const getAnswer = async (): Promise<string> => {
@@ -31,9 +31,20 @@ export const getQuestion = async (): Promise<string> => {
 // };
 // 获取图片
 export const getImage = async (): Promise<string> => {
-  return await req.get('/get_img',);
+  return await req.get("/get_img");
 };
 // 获取模型
 export const getModel = async (imagePath: string): Promise<string> => {
   return await req.get(`/get_model/${imagePath}`);
+};
+
+//文字生成模型
+
+export const textToModel = async (params: {
+  prompt: string;
+}): Promise<string> => {
+  const query = new URLSearchParams(params);
+  return await req.get(
+    `https://aitool.codejoyai.com/tripo3D/text2model/generate/?${query}`
+  );
 };

@@ -10,7 +10,7 @@ export default () => {
   return (
     <div className={styles.container}>
       <Banner title="AI生成3D模型" style={{ width: "100%", height: "70px" }} />
-      <div>
+      <div className={styles.content}>
         <div
           className={styles.Button}
           onClick={() => {

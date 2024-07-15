@@ -12,9 +12,9 @@ const StyleSelcted = (props: StyleSelectedProps) => {
     {
       name: "a",
       label: "A : Head-to-body height ratio:",
-      title: "头身高比",
       value: 1,
       range: [0, 2],
+      title: "头身高比",
     },
     {
       name: "b",
@@ -43,10 +43,11 @@ const StyleSelcted = (props: StyleSelectedProps) => {
         "E : Span of two legs, range from 0 to 15, default 9 if not specified:",
       value: 9,
       range: [0, 15],
-      title: "两条腿的跨度，范围从0到15",
+      title: "两条腿的跨度（范围从0到15）",
     },
   ];
   const [modelType, setModelType] = useState(1);
+  const [poseType, setPoseType] = useState(1);
   const [valueObj, setValueObj] = useState({
     a: 1,
     b: 1,
@@ -58,30 +59,48 @@ const StyleSelcted = (props: StyleSelectedProps) => {
     const v = e.target.value;
     setModelType(v);
     onChange({
-      type: v,
-      valueObj,
+      modelType: v,
+      poseType: poseType,
+      valueObj: valueObj,
     });
   };
   const handleValueChange = (data) => {
-    console.log(data);
     const newValue = {
       ...valueObj,
       [data.name]: data.value,
     };
     setValueObj(newValue);
     onChange({
-      type: modelType,
+      modelType: modelType,
+      poseType: poseType,
       valueObj: newValue,
+    });
+  };
+  const handlePoseChange = (e) => {
+    const v = e.target.value;
+    setPoseType(v);
+    onChange({
+      modelType: modelType,
+      valueObj: valueObj,
+      poseType: v,
     });
   };
   return (
     <div className={styles.StyleSelcted}>
       <div className={styles.typeSelected}>
-        <div className={styles.typeHeader}>模型类别</div>
+        <div className={styles.typeHeader}>模型类别：</div>
         <Radio.Group onChange={handleTypeChange} value={modelType}>
           <Radio value={1}>物品模型</Radio>
           <Radio value={2}>人物模型</Radio>
         </Radio.Group>
+        <>
+          {modelType == 2 ? (
+            <Radio.Group onChange={handlePoseChange} value={poseType}>
+              <Radio value={1}>A-pose</Radio>
+              <Radio value={2}>T-pose</Radio>
+            </Radio.Group>
+          ) : null}
+        </>
       </div>
       <>
         {modelType == 2

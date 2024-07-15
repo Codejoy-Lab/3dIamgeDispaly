@@ -4,7 +4,7 @@ import type { GetProp, UploadProps } from "antd";
 interface ButtonRow {
   onSubmit: () => void;
 }
-const ButtonRow: React.FC = (props: ButtonRow) => {
+const ButtonRow = (props: ButtonRow) => {
   const { onSubmit } = props;
   return (
     <div className={styles.ButtonRow}>
